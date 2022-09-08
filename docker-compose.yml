@@ -1,0 +1,39 @@
+version: '3'
+
+volumes:
+  mysql_storage:
+    driver: "local"
+
+services:
+  # app:
+  #   build: .
+  #   volumes: 
+  #     - .:/src
+  #   ports: 
+  #     - ${APP_PORT_CONTAINER}:${APP_PORT}
+  #   network_mode: "host"
+  #   depends_on:
+  #     - mysql
+  #   command: python3 manage.py runserver 0.0.0.0:${APP_PORT}
+  web:
+    build: ./docker_app
+    volumes:
+      - .:${APP_DIR}
+      - ./docker_app:/etc/nginx/conf.d
+    ports:
+      - ${APP_PORT}:${APP_PORT_CONTAINER}
+    environment:
+      TZ: ${TZ}
+    command: /bin/bash /var/scat/app_entrypoint.sh
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - mysql_storage:/var/lib/initdb.d
+      - ./init/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      TZ: ${TZ}
+    ports:
+      - ${DB_PORT_CONTAINER}:${DB_PORT}

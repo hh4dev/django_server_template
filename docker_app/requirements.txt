@@ -1,0 +1,4 @@
+django==2.2.2
+mysqlclient==1.4.6
+uwsgi==2.0.17.1
+django-environ==0.4.5
